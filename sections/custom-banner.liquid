@@ -84,11 +84,11 @@
   .cb-{{ section.id }} .cb-btn {
     display: inline-flex;
     align-items: center;
+    text-transform: uppercase;
     gap: 10px;
     text-decoration: none;
     white-space: nowrap;
-    padding: 10px 20px;
-    border-radius: 999px;
+    padding: 12px 20px 12px 40px;
     transition: color 0.35s cubic-bezier(.4, 0, .2, 1), background 0.35s cubic-bezier(.4, 0, .2, 1);
     background-size: 200% 100%;
     background-position: right bottom;
@@ -179,14 +179,13 @@
   .cb-{{ section.id }} .cb-bottom__text p { margin: 0; }
 
   /* ---------- DESKTOP ---------- */
-  @media screen and (min-width: 750px) {
     .cb-{{ section.id }} .cb-top__text { font-size: var(--top-text-size-d); }
     .cb-{{ section.id }} .cb-btn--top { font-size: var(--top-btn-size-d); }
     .cb-{{ section.id }} .cb-btn--middle { font-size: var(--mid-btn-size-d); }
     .cb-{{ section.id }} .cb-middle__heading { font-size: var(--heading-size-d); }
     .cb-{{ section.id }} .cb-middle__desc { font-size: var(--desc-size-d); }
     .cb-{{ section.id }} .cb-bottom__text { font-size: var(--bottom-text-size-d); }
-  }
+
 
   /* ---------- MOBILE STACK ---------- */
   @media screen and (max-width: 749px) {
