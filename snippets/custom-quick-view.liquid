@@ -1,0 +1,163 @@
+{%- doc -%}
+  Renders a custom quick-view popup for a single product.
+  Built entirely from scratch (no Dawn quick-add / product-form components)
+  per the test's "no ready-made sections/components" requirement.
+
+  Markup only — variant selection, popup open/close, and the add-to-cart
+  fetch (including the Soft Winter Jacket cross-sell) are handled in
+  assets/product-grid.js, which reads the data-* hooks below.
+
+  @param {object} product - The product object
+  @param {string} section_id - The section ID rendering this snippet
+{%- enddoc -%}
+
+{% liquid
+  assign variant = product.selected_or_first_available_variant
+
+  # Find which option index is "Color" and which is "Size" so this works
+  # regardless of the order options were set up in on each product.
+  assign color_option_index = -1
+  assign size_option_index = -1
+
+  for option in product.options_with_values
+    assign downcased_name = option.name | downcase
+    if downcased_name == 'color' or downcased_name == 'colour'
+      assign color_option_index = forloop.index0
+    endif
+    if downcased_name == 'size'
+      assign size_option_index = forloop.index0
+    endif
+  endfor
+%}
+
+<div
+  class="ec-quick-view"
+  id="QuickView-{{ product.id }}"
+  data-quick-view
+  data-product-id="{{ product.id }}"
+  data-product-handle="{{ product.handle }}"
+  hidden
+>
+  <div class="ec-quick-view__panel" role="dialog" aria-modal="true" aria-labelledby="QuickViewTitle-{{ product.id }}">
+
+    <button
+      type="button"
+      class="ec-quick-view__close"
+      data-quick-view-close
+      aria-label="Close quick view"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+
+    <div class="ec-quick-view__media">
+      <img
+        class="ec-quick-view__image"
+        data-quick-view-image
+        src="{{ product.featured_image | image_url: width: 600 }}"
+        alt="{{ product.featured_image.alt | default: product.title | escape }}"
+        width="600"
+        height="{{ 600 | divided_by: product.featured_image.aspect_ratio | default: 600 }}"
+        loading="lazy"
+      >
+    </div>
+
+    <div class="ec-quick-view__content">
+      <h3 id="QuickViewTitle-{{ product.id }}" class="ec-quick-view__title">
+        {{ product.title }}
+      </h3>
+
+      <p class="ec-quick-view__price" data-quick-view-price>
+        {{ variant.price | money }}
+      </p>
+
+      {% if product.description != blank %}
+        <div class="ec-quick-view__description">
+          {{ product.description }}
+        </div>
+      {% endif %}
+
+      {% comment %}
+        Full product/variant data as JSON so product-grid.js can resolve the
+        matching variant on option change without an extra network request.
+      {% endcomment %}
+      <script type="application/json" data-quick-view-json>
+        {{ product | json }}
+      </script>
+
+      <form data-quick-view-form data-product-id="{{ product.id }}">
+
+        {% if color_option_index > -1 %}
+          {% assign color_option = product.options_with_values[color_option_index] %}
+          <fieldset class="ec-quick-view__option" data-option-index="{{ color_option_index }}">
+            <legend class="ec-quick-view__option-label">{{ color_option.name }}</legend>
+
+            <div class="ec-quick-view__color-bars">
+              {% for value in color_option.values %}
+                <label class="ec-quick-view__color-bar">
+                  <input
+                    type="radio"
+                    class="ec-quick-view__color-bar-input"
+                    name="option-{{ color_option_index }}-{{ product.id }}"
+                    value="{{ value | escape }}"
+                    data-option-input
+                    data-option-index="{{ color_option_index }}"
+                    {% if value == variant.options[color_option_index] %}checked{% endif %}
+                  >
+                  <span class="ec-quick-view__color-bar-visual" data-color="{{ value | handle }}"></span>
+                  <span class="ec-quick-view__color-bar-name">{{ value }}</span>
+                </label>
+              {% endfor %}
+            </div>
+          </fieldset>
+        {% endif %}
+
+        {% if size_option_index > -1 %}
+          {% assign size_option = product.options_with_values[size_option_index] %}
+          <div class="ec-quick-view__option">
+            <label class="ec-quick-view__option-label" for="SizeSelect-{{ product.id }}">
+              {{ size_option.name }}
+            </label>
+            <div class="ec-quick-view__select-wrapper">
+              <select
+                id="SizeSelect-{{ product.id }}"
+                class="ec-quick-view__size-select"
+                name="option-{{ size_option_index }}-{{ product.id }}"
+                data-option-input
+                data-option-index="{{ size_option_index }}"
+              >
+                <option value="" disabled {% if variant.options[size_option_index] == blank %}selected{% endif %}>
+                  Choose your size
+                </option>
+                {% for value in size_option.values %}
+                  <option
+                    value="{{ value | escape }}"
+                    {% if value == variant.options[size_option_index] %}selected{% endif %}
+                  >
+                    {{ value }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        {% endif %}
+
+        {% comment %} Kept in sync by JS as the shopper picks options. {% endcomment %}
+        <input type="hidden" name="id" value="{{ variant.id }}" data-selected-variant-id>
+
+        <div class="ec-quick-view__status" role="status" aria-live="polite" data-quick-view-status></div>
+
+        <button
+          type="submit"
+          class="ec-quick-view__submit"
+          data-quick-view-submit
+          {% unless variant.available %}disabled{% endunless %}
+        >
+          <span data-quick-view-submit-text>
+            {% if variant.available %}ADD TO CART{% else %}SOLD OUT{% endif %}
+          </span>
+          <span class="ec-quick-view__submit-arrow" aria-hidden="true">&rarr;</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
