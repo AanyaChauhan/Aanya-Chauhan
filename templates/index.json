@@ -374,8 +374,8 @@
           "type": "product",
           "settings": {
             "product": "classic-leather-jacket",
-            "horizontal_offset_desktop": 85,
-            "vertical_offset_desktop": 20,
+            "horizontal_offset_desktop": 79,
+            "vertical_offset_desktop": 19,
             "horizontal_offset_mobile": 11,
             "vertical_offset_mobile": 29
           }
@@ -383,9 +383,9 @@
         "product_eDUVEf": {
           "type": "product",
           "settings": {
-            "product": "",
-            "horizontal_offset_desktop": 85,
-            "vertical_offset_desktop": 20,
+            "product": "classic-varsity-top",
+            "horizontal_offset_desktop": 52,
+            "vertical_offset_desktop": 27,
             "horizontal_offset_mobile": 85,
             "vertical_offset_mobile": 20
           }
@@ -393,9 +393,9 @@
         "product_BnWCW3": {
           "type": "product",
           "settings": {
-            "product": "",
-            "horizontal_offset_desktop": 85,
-            "vertical_offset_desktop": 20,
+            "product": "dark-denim-top",
+            "horizontal_offset_desktop": 80,
+            "vertical_offset_desktop": 41,
             "horizontal_offset_mobile": 85,
             "vertical_offset_mobile": 20
           }
