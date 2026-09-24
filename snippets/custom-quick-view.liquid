@@ -490,11 +490,53 @@
         input.addEventListener('change', handleOptionChange);
       });
 
-      function handleOptionChange() {
+            function handleOptionChange() {
+        panel.querySelectorAll('.ec-quick-view__color-bar').forEach(function (bar) {
+          var input = bar.querySelector('.ec-quick-view__color-bar-input');
+          bar.classList.toggle('is-selected', !!(input && input.checked));
+        });
+
         var selected = getSelectedOptions();
         var variant = findVariant(product, selected);
         updateForVariant(variant, selected);
       }
+
+      var sizeDropdown = panel.querySelector('[data-size-dropdown]');
+      if (sizeDropdown) {
+        var sizeTrigger = sizeDropdown.querySelector('[data-size-trigger]');
+        var sizeTriggerText = sizeDropdown.querySelector('[data-size-trigger-text]');
+        var sizeList = sizeDropdown.querySelector('[data-size-list]');
+        var sizeHiddenInput = sizeDropdown.querySelector('input[type="hidden"][data-option-input]');
+        var sizeOptions = sizeDropdown.querySelectorAll('.ec-quick-view__select-option');
+
+        sizeTrigger.addEventListener('click', function (event) {
+          event.stopPropagation();
+          var isOpen = !sizeList.hidden;
+          sizeList.hidden = isOpen;
+          sizeTrigger.setAttribute('aria-expanded', String(!isOpen));
+        });
+
+        sizeOptions.forEach(function (option) {
+          option.addEventListener('click', function () {
+            sizeOptions.forEach(function (opt) { opt.setAttribute('aria-selected', 'false'); });
+            option.setAttribute('aria-selected', 'true');
+            sizeTriggerText.textContent = option.getAttribute('data-value');
+            sizeHiddenInput.value = option.getAttribute('data-value');
+            sizeHiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+            sizeList.hidden = true;
+            sizeTrigger.setAttribute('aria-expanded', 'false');
+          });
+        });
+
+        document.addEventListener('click', function (event) {
+          if (!sizeDropdown.contains(event.target)) {
+            sizeList.hidden = true;
+            sizeTrigger.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
+      handleOptionChange();
 
       function getSelectedOptions() {
         // Build an ordered array of the currently chosen value per option index.
@@ -525,10 +567,10 @@
         });
       }
 
-      function updateForVariant(variant, selected) {
+            function updateForVariant(variant, selected) {
         var allChosen = selected.every(function (value) { return value !== null; });
 
-        if (variant) {
+        if (allChosen && variant) {
           priceEl.textContent = formatMoney(variant.price);
           idInput.value = variant.id;
           if (variant.featured_image && imageEl) {
