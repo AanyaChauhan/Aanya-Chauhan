@@ -336,11 +336,93 @@
         "bottom_text_size_desktop": 16,
         "bottom_text_size_mobile": 11
       }
+    },
+    "custom_product_grid_3UjTgd": {
+      "type": "custom-product-grid",
+      "blocks": {
+        "product_WXHCpj": {
+          "type": "product",
+          "settings": {
+            "product": "black-leather-bag",
+            "horizontal_offset_desktop": 46,
+            "vertical_offset_desktop": 72,
+            "horizontal_offset_mobile": 85,
+            "vertical_offset_mobile": 20
+          }
+        },
+        "product_NN4mi3": {
+          "type": "product",
+          "settings": {
+            "product": "blue-silk-tuxedo",
+            "horizontal_offset_desktop": 92,
+            "vertical_offset_desktop": 50,
+            "horizontal_offset_mobile": 85,
+            "vertical_offset_mobile": 20
+          }
+        },
+        "product_rQH8N4": {
+          "type": "product",
+          "settings": {
+            "product": "chequered-red-shirt",
+            "horizontal_offset_desktop": 65,
+            "vertical_offset_desktop": 20,
+            "horizontal_offset_mobile": 85,
+            "vertical_offset_mobile": 20
+          }
+        },
+        "product_h8DRwf": {
+          "type": "product",
+          "settings": {
+            "product": "classic-leather-jacket",
+            "horizontal_offset_desktop": 85,
+            "vertical_offset_desktop": 20,
+            "horizontal_offset_mobile": 75,
+            "vertical_offset_mobile": 94
+          }
+        },
+        "product_eDUVEf": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "horizontal_offset_desktop": 85,
+            "vertical_offset_desktop": 20,
+            "horizontal_offset_mobile": 85,
+            "vertical_offset_mobile": 20
+          }
+        },
+        "product_BnWCW3": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "horizontal_offset_desktop": 85,
+            "vertical_offset_desktop": 20,
+            "horizontal_offset_mobile": 85,
+            "vertical_offset_mobile": 20
+          }
+        }
+      },
+      "block_order": [
+        "product_WXHCpj",
+        "product_NN4mi3",
+        "product_rQH8N4",
+        "product_h8DRwf",
+        "product_eDUVEf",
+        "product_BnWCW3"
+      ],
+      "name": "Custom Product Grid",
+      "settings": {
+        "bg_color": "#FFFFFF",
+        "heading": "Tisso vison in the wild",
+        "heading_color": "#1A1A1A",
+        "heading_size_desktop": 36,
+        "heading_size_mobile": 20
+      }
     }
   },
   "order": [
     "hero_jVaWmY",
     "product_list_fa6P9H",
-    "custom_banner_L3nLgK"
+    "custom_banner_L3nLgK",
+    "custom_product_grid_3UjTgd"
   ]
 }
