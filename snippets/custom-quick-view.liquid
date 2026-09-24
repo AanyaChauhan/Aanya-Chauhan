@@ -1,22 +1,3 @@
-{%- doc -%}
-  Renders a custom quick-view popup for a single product.
-  Built entirely from scratch (no Dawn quick-add / product-form components)
-  per the test's "no ready-made sections/components" requirement.
-
-  Self-contained: markup, styles, and behavior all live in this one file.
-  Variant selection, popup open/close, and the add-to-cart fetch (including
-  the Black+Medium -> Soft Winter Jacket cross-sell) are handled by the
-  inline <script> at the bottom, which reads the data-* hooks below.
-
-  @param {object} product - The product object
-  @param {string} section_id - The section ID rendering this snippet
-  @param {string} [cross_sell_variant_id] - Variant ID to auto-add when the
-    shopper's selected variant has both a "Black" and a "Medium" option
-    value. Pass this from the parent section's settings, e.g.
-    render 'quick-view-card', product: product, section_id: section.id,
-      cross_sell_variant_id: section.settings.cross_sell_variant.selected_or_first_available_variant.id
-{%- enddoc -%}
-
 {% liquid
   assign variant = product.selected_or_first_available_variant
 
