@@ -148,6 +148,21 @@
   </div>
 </div>
 
+<script>
+  if (!window.__cpgHotspotInit) {
+    window.__cpgHotspotInit = true;
+    document.addEventListener('click', function (event) {
+      var trigger = event.target.closest('[data-quick-view-trigger]');
+      if (!trigger) return;
+      document.dispatchEvent(
+        new CustomEvent('ec:open-quick-view', {
+          detail: { productId: trigger.getAttribute('data-product-id') }
+        })
+      );
+    });
+  }
+</script>
+
 {% schema %}
 {
   "name": "Custom Product Grid",
