@@ -163,7 +163,11 @@
   });
 {%- endcomment -%}
 
-{% render 'custom-quick-view' %}
+            {%- render 'custom-quick-view',
+              product: product,
+              section_id: section.id,
+              cross_sell_variant_id: section.settings.cross_sell_product.selected_or_first_available_variant.id
+            -%}
 
 {% schema %}
 {
