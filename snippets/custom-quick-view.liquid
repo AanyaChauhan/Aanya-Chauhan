@@ -37,32 +37,36 @@
       <span aria-hidden="true">&times;</span>
     </button>
 
-    <div class="ec-quick-view__media">
-      <img
-        class="ec-quick-view__image"
-        data-quick-view-image
-        src="{{ product.featured_image | image_url: width: 600 }}"
-        alt="{{ product.featured_image.alt | default: product.title | escape }}"
-        width="600"
-        height="{{ 600 | divided_by: product.featured_image.aspect_ratio | default: 600 }}"
-        loading="lazy"
-      >
-    </div>
-
-    <div class="ec-quick-view__content">
-      <h3 id="QuickViewTitle-{{ product.id }}" class="ec-quick-view__title">
-        {{ product.title }}
-      </h3>
-
-      <p class="ec-quick-view__price" data-quick-view-price>
-        {{ variant.price | money }}
-      </p>
-
-      {% if product.description != blank %}
-        <div class="ec-quick-view__description">
-          {{ product.description }}
+        <div class="ec-quick-view__content">
+      <div class="ec-quick-view__top">
+        <div class="ec-quick-view__media">
+          <img
+            class="ec-quick-view__image"
+            data-quick-view-image
+            src="{{ product.featured_image | image_url: width: 600 }}"
+            alt="{{ product.featured_image.alt | default: product.title | escape }}"
+            width="600"
+            height="{{ 600 | divided_by: product.featured_image.aspect_ratio | default: 600 }}"
+            loading="lazy"
+          >
         </div>
-      {% endif %}
+
+        <div class="ec-quick-view__info">
+          <h3 id="QuickViewTitle-{{ product.id }}" class="ec-quick-view__title">
+            {{ product.title }}
+          </h3>
+
+          <p class="ec-quick-view__price" data-quick-view-price>
+            {{ variant.price | money }}
+          </p>
+
+          {% if product.description != blank %}
+            <div class="ec-quick-view__description">
+              {{ product.description }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
 
       {% comment %}
         Full product/variant data as JSON so product-grid.js can resolve the
