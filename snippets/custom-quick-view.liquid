@@ -279,7 +279,15 @@
     align-items: center;
     padding: 0.75rem 1rem 0.75rem 1.75rem;
     cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .ec-quick-view__color-bar,
+    .ec-quick-view__color-bar-name {
+      transition-property: background-color, color;
+      transition-duration: var(--animation-speed, 0.2s);
+      transition-timing-function: var(--ease-out-cubic, ease);
+    }
   }
 
   .ec-quick-view__color-bar:not(:last-child) {
@@ -445,9 +453,8 @@
     document.addEventListener('DOMContentLoaded', initQuickViews);
     if (document.readyState !== 'loading') initQuickViews();
 
-    function initQuickViews() {
+        function initQuickViews() {
       var panels = document.querySelectorAll('[data-quick-view]');
-      panels.forEach(setUpPanel);
 
       // Grid hotspots dispatch this event to open a specific product's panel:
       // document.dispatchEvent(new CustomEvent('ec:open-quick-view', { detail: { productId } }))
@@ -461,6 +468,14 @@
         if (event.key !== 'Escape') return;
         var open = document.querySelector('[data-quick-view]:not([hidden])');
         if (open) closePanel(open);
+      });
+
+      panels.forEach(function (panel) {
+        try {
+          setUpPanel(panel);
+        } catch (err) {
+          console.error('Quick view setup failed for panel', panel.id, err);
+        }
       });
     }
 
