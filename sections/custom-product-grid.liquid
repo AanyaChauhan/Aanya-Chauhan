@@ -1,0 +1,272 @@
+{%- comment -%}
+  Custom Product Grid Section
+  - Heading (color, size desktop/mobile)
+  - Product blocks (merchant picks products from admin)
+  - Each product has a hotspot (+) icon with independent desktop/mobile offsets
+  - Clicking the hotspot dispatches a custom event that custom-quick-view.liquid listens for
+{%- endcomment -%}
+
+{% capture hotspot_icon %}
+<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="11" cy="11" r="11" fill="#F8F8F8" fill-opacity="0.9"/>
+<path d="M11.3438 7.04199V15.5035" stroke="black" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="round"/>
+<path d="M7.11719 11.2729H15.5787" stroke="black" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="round"/>
+</svg>
+{% endcapture %}
+
+{%- style -%}
+  .custom-product-grid {
+    --heading-color: {{ section.settings.heading_color }};
+    --heading-size-d: {{ section.settings.heading_size_desktop }}px;
+    --heading-size-m: {{ section.settings.heading_size_mobile }}px;
+    background-color: {{ section.settings.bg_color }};
+    padding: 48px 40px;
+  }
+
+  .custom-product-grid * { box-sizing: border-box; }
+
+  .custom-product-grid .cpg-heading {
+    margin: 0 0 28px;
+    color: var(--heading-color);
+    font-size: var(--heading-size-m);
+    line-height: 1.2;
+  }
+
+  .custom-product-grid .cpg-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .custom-product-grid .cpg-item {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background-color: #eee;
+  }
+
+  .custom-product-grid .cpg-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .custom-product-grid .cpg-hotspot {
+    position: absolute;
+    top: var(--v-offset-m, 50%);
+    left: var(--h-offset-m, 50%);
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    line-height: 0;
+  }
+
+  .custom-product-grid .cpg-hotspot svg {
+    display: block;
+    transition: transform 0.2s ease;
+  }
+
+  .custom-product-grid .cpg-hotspot:hover svg {
+    transform: scale(1.08);
+  }
+
+  @media screen and (min-width: 750px) {
+    .custom-product-grid .cpg-heading {
+      font-size: var(--heading-size-d);
+    }
+    .custom-product-grid .cpg-hotspot {
+      top: var(--v-offset-d, 50%);
+      left: var(--h-offset-d, 50%);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .custom-product-grid {
+      padding: 32px 20px;
+    }
+    .custom-product-grid .cpg-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="custom-product-grid">
+  {%- if section.settings.heading != blank -%}
+    <h2 class="cpg-heading">{{ section.settings.heading }}</h2>
+  {%- endif -%}
+
+  <div class="cpg-grid">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'product' -%}
+        {%- assign product = block.settings.product -%}
+        <div class="cpg-item" {{ block.shopify_attributes }}
+          style="
+            --h-offset-d: {{ block.settings.horizontal_offset_desktop }}%;
+            --v-offset-d: {{ block.settings.vertical_offset_desktop }}%;
+            --h-offset-m: {{ block.settings.horizontal_offset_mobile }}%;
+            --v-offset-m: {{ block.settings.vertical_offset_mobile }}%;
+          "
+        >
+          {%- if product != blank -%}
+            {%- if product.featured_image != blank -%}
+              <img
+                src="{{ product.featured_image | image_url: width: 800 }}"
+                alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                loading="lazy"
+                width="{{ product.featured_image.width }}"
+                height="{{ product.featured_image.height }}"
+              >
+            {%- endif -%}
+
+            <button
+              type="button"
+              class="cpg-hotspot"
+              aria-label="Quick view {{ product.title | escape }}"
+              data-quick-view-trigger
+              data-product-handle="{{ product.handle }}"
+              data-product-id="{{ product.id }}"
+            >
+              {{ hotspot_icon }}
+            </button>
+          {%- else -%}
+            <div class="cpg-placeholder">
+              {{ 'product-1' | placeholder_svg_tag: 'cpg-placeholder-svg' }}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+{%- comment -%}
+  Quick view snippet hook.
+  custom-quick-view.liquid should listen for clicks on [data-quick-view-trigger]
+  and read data-product-handle / data-product-id to render/open its modal.
+  Example dispatch (add inside custom-quick-view.liquid or a small inline script):
+
+  document.addEventListener('click', function (e) {
+    var trigger = e.target.closest('[data-quick-view-trigger]');
+    if (!trigger) return;
+    document.dispatchEvent(
+      new CustomEvent('custom-quick-view:open', {
+        detail: {
+          handle: trigger.getAttribute('data-product-handle'),
+          id: trigger.getAttribute('data-product-id')
+        }
+      })
+    );
+  });
+{%- endcomment -%}
+
+{% render 'custom-quick-view' %}
+
+{% schema %}
+{
+  "name": "Custom Product Grid",
+  "settings": [
+    { "type": "color", "id": "bg_color", "label": "Background color", "default": "#FFFFFF" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Tisso vison in the wild" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#1A1A1A" },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "label": "Heading size (desktop)",
+      "min": 16,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size (mobile)",
+      "min": 14,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        { "type": "product", "id": "product", "label": "Product" },
+        {
+          "type": "header",
+          "content": "Hotspot position \u2013 desktop"
+        },
+        {
+          "type": "range",
+          "id": "horizontal_offset_desktop",
+          "label": "Horizontal offset",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 85
+        },
+        {
+          "type": "range",
+          "id": "vertical_offset_desktop",
+          "label": "Vertical offset",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 20
+        },
+        {
+          "type": "header",
+          "content": "Hotspot position \u2013 mobile"
+        },
+        {
+          "type": "range",
+          "id": "horizontal_offset_mobile",
+          "label": "Horizontal offset",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 85
+        },
+        {
+          "type": "range",
+          "id": "vertical_offset_mobile",
+          "label": "Vertical offset",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 20
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Product Grid",
+      "blocks": [
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" }
+      ]
+    }
+  ]
+}
+{% endschema %}
