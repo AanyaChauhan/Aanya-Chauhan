@@ -132,6 +132,11 @@
             >
               {{ hotspot_icon }}
             </button>
+                      {%- render 'custom-quick-view',
+                    product: product,
+                    section_id: section.id,
+                    cross_sell_variant_id: section.settings.cross_sell_product.selected_or_first_available_variant.id
+                  -%}
           {%- else -%}
             <div class="cpg-placeholder">
               {{ 'product-1' | placeholder_svg_tag: 'cpg-placeholder-svg' }}
@@ -139,11 +144,6 @@
           {%- endif -%}
         </div>
       {%- endif -%}
-      {%- render 'custom-quick-view',
-              product: product,
-              section_id: section.id,
-              cross_sell_variant_id: section.settings.cross_sell_product.selected_or_first_available_variant.id
-            -%}
     {%- endfor -%}
   </div>
 </div>
