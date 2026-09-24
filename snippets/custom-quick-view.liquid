@@ -3,12 +3,18 @@
   Built entirely from scratch (no Dawn quick-add / product-form components)
   per the test's "no ready-made sections/components" requirement.
 
-  Markup only — variant selection, popup open/close, and the add-to-cart
-  fetch (including the Soft Winter Jacket cross-sell) are handled in
-  assets/product-grid.js, which reads the data-* hooks below.
+  Self-contained: markup, styles, and behavior all live in this one file.
+  Variant selection, popup open/close, and the add-to-cart fetch (including
+  the Black+Medium -> Soft Winter Jacket cross-sell) are handled by the
+  inline <script> at the bottom, which reads the data-* hooks below.
 
   @param {object} product - The product object
   @param {string} section_id - The section ID rendering this snippet
+  @param {string} [cross_sell_variant_id] - Variant ID to auto-add when the
+    shopper's selected variant has both a "Black" and a "Medium" option
+    value. Pass this from the parent section's settings, e.g.
+    render 'quick-view-card', product: product, section_id: section.id,
+      cross_sell_variant_id: section.settings.cross_sell_variant.selected_or_first_available_variant.id
 {%- enddoc -%}
 
 {% liquid
@@ -36,6 +42,7 @@
   data-quick-view
   data-product-id="{{ product.id }}"
   data-product-handle="{{ product.handle }}"
+  data-cross-sell-variant-id="{{ cross_sell_variant_id }}"
   hidden
 >
   <div class="ec-quick-view__panel" role="dialog" aria-modal="true" aria-labelledby="QuickViewTitle-{{ product.id }}">
@@ -161,3 +168,397 @@
     </div>
   </div>
 </div>
+
+<style>
+  /* Scoped with an .ec- prefix so nothing bleeds in from/to Dawn's base CSS. */
+
+  .ec-quick-view {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 1.5rem;
+  }
+
+  .ec-quick-view[hidden] {
+    display: none;
+  }
+
+  .ec-quick-view__panel {
+    position: relative;
+    display: flex;
+    width: 100%;
+    max-width: 640px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #fff;
+  }
+
+  .ec-quick-view__close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    background: transparent;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .ec-quick-view__media {
+    flex: 0 0 40%;
+  }
+
+  .ec-quick-view__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ec-quick-view__content {
+    flex: 1;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .ec-quick-view__title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 500;
+  }
+
+  .ec-quick-view__price {
+    margin: 0;
+    font-size: 1.125rem;
+  }
+
+  .ec-quick-view__description {
+    font-size: 0.875rem;
+    color: #555;
+  }
+
+  .ec-quick-view__option {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+
+  .ec-quick-view__option-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Color bars: horizontal strip, each value gets equal width, divided by a border. */
+  .ec-quick-view__color-bars {
+    display: flex;
+    border: 1px solid #000;
+  }
+
+  .ec-quick-view__color-bar {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+  }
+
+  .ec-quick-view__color-bar:not(:last-child) {
+    border-right: 1px solid #000;
+  }
+
+  .ec-quick-view__color-bar-input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  .ec-quick-view__color-bar-visual {
+    width: 6px;
+    height: 1.5rem;
+    background: var(--ec-bar-color, #ccc);
+    flex-shrink: 0;
+  }
+
+  /* Swap these for real hex codes to match your color option values. */
+  .ec-quick-view__color-bar-visual[data-color="black"] { --ec-bar-color: #000; }
+  .ec-quick-view__color-bar-visual[data-color="white"] { --ec-bar-color: #fff; border: 1px solid #ccc; }
+  .ec-quick-view__color-bar-visual[data-color="grey"],
+  .ec-quick-view__color-bar-visual[data-color="gray"] { --ec-bar-color: #888; }
+  .ec-quick-view__color-bar-visual[data-color="red"] { --ec-bar-color: #b0203e; }
+  .ec-quick-view__color-bar-visual[data-color="blue"] { --ec-bar-color: #1b3a6b; }
+
+  .ec-quick-view__color-bar-input:checked ~ .ec-quick-view__color-bar-visual {
+    outline: 2px solid #000;
+    outline-offset: 2px;
+  }
+
+  .ec-quick-view__color-bar-input:focus-visible ~ .ec-quick-view__color-bar-visual {
+    outline: 2px dashed #000;
+    outline-offset: 2px;
+  }
+
+  .ec-quick-view__color-bar-name {
+    font-size: 0.8125rem;
+  }
+
+  .ec-quick-view__select-wrapper {
+    border: 1px solid #000;
+  }
+
+  .ec-quick-view__size-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: none;
+    background: transparent;
+    font-size: 0.875rem;
+    appearance: none;
+  }
+
+  .ec-quick-view__status {
+    min-height: 1rem;
+    font-size: 0.8125rem;
+  }
+
+  .ec-quick-view__status[data-status="error"] {
+    color: #b0203e;
+  }
+
+  .ec-quick-view__submit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: auto;
+    padding: 1rem 1.25rem;
+    border: none;
+    background: #000;
+    color: #fff;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+  }
+
+  .ec-quick-view__submit:disabled {
+    background: #999;
+    cursor: not-allowed;
+  }
+
+  .ec-quick-view__submit-arrow {
+    transition: transform 0.15s ease;
+  }
+
+  .ec-quick-view__submit:not(:disabled):hover .ec-quick-view__submit-arrow {
+    transform: translateX(4px);
+  }
+
+  @media screen and (max-width: 749px) {
+    .ec-quick-view__panel {
+      flex-direction: column;
+      max-height: 95vh;
+    }
+
+    .ec-quick-view__media {
+      flex-basis: auto;
+      max-height: 40vh;
+    }
+
+    .ec-quick-view__content {
+      padding: 1.25rem;
+    }
+  }
+</style>
+
+<script>
+  /*
+   * Runs once per page even though this snippet renders once per hotspot
+   * product. The guard below stops duplicate listeners from stacking up.
+   */
+  if (!window.__ecQuickViewInit) {
+    window.__ecQuickViewInit = true;
+
+    document.addEventListener('DOMContentLoaded', initQuickViews);
+    if (document.readyState !== 'loading') initQuickViews();
+
+    function initQuickViews() {
+      var panels = document.querySelectorAll('[data-quick-view]');
+      panels.forEach(setUpPanel);
+
+      // Grid hotspots dispatch this event to open a specific product's panel:
+      // document.dispatchEvent(new CustomEvent('ec:open-quick-view', { detail: { productId } }))
+      document.addEventListener('ec:open-quick-view', function (event) {
+        var id = event.detail && event.detail.productId;
+        var panel = document.querySelector('[data-quick-view][data-product-id="' + id + '"]');
+        if (panel) openPanel(panel);
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Escape') return;
+        var open = document.querySelector('[data-quick-view]:not([hidden])');
+        if (open) closePanel(open);
+      });
+    }
+
+    function setUpPanel(panel) {
+      var jsonEl = panel.querySelector('[data-quick-view-json]');
+      var product = JSON.parse(jsonEl.textContent);
+
+      var form = panel.querySelector('[data-quick-view-form]');
+      var priceEl = panel.querySelector('[data-quick-view-price]');
+      var idInput = panel.querySelector('[data-selected-variant-id]');
+      var submitBtn = panel.querySelector('[data-quick-view-submit]');
+      var submitText = panel.querySelector('[data-quick-view-submit-text]');
+      var statusEl = panel.querySelector('[data-quick-view-status]');
+      var imageEl = panel.querySelector('[data-quick-view-image]');
+      var closeBtn = panel.querySelector('[data-quick-view-close]');
+      var optionInputs = panel.querySelectorAll('[data-option-input]');
+
+      closeBtn.addEventListener('click', function () {
+        closePanel(panel);
+      });
+
+      panel.addEventListener('click', function (event) {
+        if (event.target === panel) closePanel(panel);
+      });
+
+      optionInputs.forEach(function (input) {
+        input.addEventListener('change', handleOptionChange);
+      });
+
+      function handleOptionChange() {
+        var selected = getSelectedOptions();
+        var variant = findVariant(product, selected);
+        updateForVariant(variant, selected);
+      }
+
+      function getSelectedOptions() {
+        // Build an ordered array of the currently chosen value per option index.
+        var byIndex = {};
+
+        panel.querySelectorAll('[data-option-input]').forEach(function (input) {
+          var index = input.getAttribute('data-option-index');
+          if (input.type === 'radio') {
+            if (input.checked) byIndex[index] = input.value;
+          } else {
+            if (input.value) byIndex[index] = input.value;
+          }
+        });
+
+        var maxIndex = product.options.length - 1;
+        var ordered = [];
+        for (var i = 0; i <= maxIndex; i++) {
+          ordered.push(byIndex[i] || null);
+        }
+        return ordered;
+      }
+
+      function findVariant(product, selected) {
+        return product.variants.find(function (variant) {
+          return selected.every(function (value, index) {
+            return value === null || variant.options[index] === value;
+          });
+        });
+      }
+
+      function updateForVariant(variant, selected) {
+        var allChosen = selected.every(function (value) { return value !== null; });
+
+        if (variant) {
+          priceEl.textContent = formatMoney(variant.price);
+          idInput.value = variant.id;
+          if (variant.featured_image && imageEl) {
+            imageEl.src = variant.featured_image.src;
+          }
+        }
+
+        if (!allChosen) {
+          submitBtn.disabled = true;
+          submitText.textContent = 'SELECT OPTIONS';
+        } else if (!variant || !variant.available) {
+          submitBtn.disabled = true;
+          submitText.textContent = 'SOLD OUT';
+        } else {
+          submitBtn.disabled = false;
+          submitText.textContent = 'ADD TO CART';
+        }
+      }
+
+      function formatMoney(cents) {
+        // Swap for `Shopify.formatMoney` if you load moneyFormat from settings.
+        return '$' + (cents / 100).toFixed(2);
+      }
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        submitBtn.disabled = true;
+
+        var variantId = idInput.value;
+        var selected = getSelectedOptions();
+        var variant = findVariant(product, selected);
+
+        var items = [{ id: variantId, quantity: 1 }];
+
+        // Cross-sell rule: any product added with Black + Medium options
+        // also adds the Soft Winter Jacket, configured via
+        // data-cross-sell-variant-id on the panel.
+        var crossSellId = panel.getAttribute('data-cross-sell-variant-id');
+        if (variant && crossSellId && hasBlackAndMedium(variant)) {
+          items.push({ id: crossSellId, quantity: 1 });
+        }
+
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: items })
+        })
+          .then(function (response) {
+            if (!response.ok) throw new Error('Add to cart failed');
+            return response.json();
+          })
+          .then(function () {
+            statusEl.removeAttribute('data-status');
+            statusEl.textContent = 'Added to cart';
+            document.dispatchEvent(new CustomEvent('ec:cart-updated'));
+            submitBtn.disabled = false;
+          })
+          .catch(function () {
+            statusEl.setAttribute('data-status', 'error');
+            statusEl.textContent = 'Something went wrong. Please try again.';
+            submitBtn.disabled = false;
+          });
+      });
+
+      function hasBlackAndMedium(variant) {
+        var values = variant.options.map(function (value) {
+          return (value || '').toLowerCase();
+        });
+        return values.indexOf('black') > -1 && values.indexOf('medium') > -1;
+      }
+    }
+
+    function openPanel(panel) {
+      panel.hidden = false;
+      document.body.style.overflow = 'hidden';
+      var closeBtn = panel.querySelector('[data-quick-view-close]');
+      if (closeBtn) closeBtn.focus();
+    }
+
+    function closePanel(panel) {
+      panel.hidden = true;
+      document.body.style.overflow = '';
+    }
+  }
+</script>
