@@ -148,32 +148,6 @@
   </div>
 </div>
 
-{%- comment -%}
-  Quick view snippet hook.
-  custom-quick-view.liquid should listen for clicks on [data-quick-view-trigger]
-  and read data-product-handle / data-product-id to render/open its modal.
-  Example dispatch (add inside custom-quick-view.liquid or a small inline script):
-
-  document.addEventListener('click', function (e) {
-    var trigger = e.target.closest('[data-quick-view-trigger]');
-    if (!trigger) return;
-    document.dispatchEvent(
-      new CustomEvent('custom-quick-view:open', {
-        detail: {
-          handle: trigger.getAttribute('data-product-handle'),
-          id: trigger.getAttribute('data-product-id')
-        }
-      })
-    );
-  });
-{%- endcomment -%}
-
-            {%- render 'custom-quick-view',
-              product: product,
-              section_id: section.id,
-              cross_sell_variant_id: section.settings.cross_sell_product.selected_or_first_available_variant.id
-            -%}
-
 {% schema %}
 {
   "name": "Custom Product Grid",
