@@ -13,7 +13,7 @@
 
 
 {%- style -%}
-  .cb-{{ section.id }} {
+  .custom-banner-section {
     --top-bg: {{ section.settings.top_bg }};
     --top-text-color: {{ section.settings.top_text_color }};
     --top-text-size-d: {{ section.settings.top_text_size_desktop }}px;
@@ -49,10 +49,10 @@
     overflow: hidden;
   }
 
-  .cb-{{ section.id }} * { box-sizing: border-box; }
+  .custom-banner-section * { box-sizing: border-box; }
 
   /* ---------- TOP BAR ---------- */
-  .cb-{{ section.id }} .cb-top {
+  .custom-banner-section .cb-top {
     background-color: var(--top-bg);
     display: flex;
     align-items: center;
@@ -61,15 +61,14 @@
     padding: 10px 50px;
     flex-wrap: wrap;
   }
-  .cb-{{ section.id }} .cb-top__logo { flex: 0 0 auto; display: flex; align-items: center; }
-  .cb-{{ section.id }} .cb-top__logo img { max-height: 32px; width: auto; display: block; }
-  .cb-{{ section.id }} .cb-top__logo-text {
+  .custom-banner-section .cb-top__logo { flex: 0 0 auto; display: flex; align-items: center; }
+  .custom-banner-section .cb-top__logo img { max-height: 32px; width: auto; display: block; }
+  .custom-banner-section .cb-top__logo-text {
     font-weight: 700;
     letter-spacing: 0.08em;
     color: var(--top-text-color);
   }
-  .cb-{{ section.id }} .cb-top__text {
-    /* font-family: 'Jost', sans-serif; */
+  .custom-banner-section .cb-top__text {
     font-weight: 400;
     line-height: 1.3;
     flex: 1 1 auto;
@@ -78,10 +77,10 @@
     font-size: var(--top-text-size-m);
     min-width: 140px;
   }
-  .cb-{{ section.id }} .cb-top__btn { flex: 0 0 auto; }
+  .custom-banner-section .cb-top__btn { flex: 0 0 auto; }
 
   /* ---------- BUTTONS (shared wipe hover) ---------- */
-  .cb-{{ section.id }} .cb-btn {
+  .custom-banner-section .cb-btn {
     display: inline-flex;
     align-items: center;
     text-transform: uppercase;
@@ -93,31 +92,31 @@
     background-size: 200% 100%;
     background-position: right bottom;
   }
-  .cb-{{ section.id }} .cb-btn__icon { display: inline-flex; line-height: 0; }
-  .cb-{{ section.id }} .cb-btn__icon svg { display: block; height: 12px; width: auto; }
+  .custom-banner-section .cb-btn__icon { display: inline-flex; line-height: 0; }
+  .custom-banner-section .cb-btn__icon svg { display: block; height: 12px; width: auto; }
 
-  .cb-{{ section.id }} .cb-btn--top {
+  .custom-banner-section .cb-btn--top {
     font-size: var(--top-btn-size-m);
     color: var(--top-btn-color);
     background-image: linear-gradient(90deg, var(--top-btn-bg-hover) 50%, var(--top-btn-bg) 50%);
   }
-  .cb-{{ section.id }} .cb-btn--top:hover {
+  .custom-banner-section .cb-btn--top:hover {
     color: var(--top-btn-color-hover);
     background-position: left bottom;
   }
 
-  .cb-{{ section.id }} .cb-btn--middle {
+  .custom-banner-section .cb-btn--middle {
     font-size: var(--mid-btn-size-m);
     color: var(--mid-btn-color);
     background-image: linear-gradient(90deg, var(--mid-btn-bg-hover) 50%, var(--mid-btn-bg) 50%);
   }
-  .cb-{{ section.id }} .cb-btn--middle:hover {
+  .custom-banner-section .cb-btn--middle:hover {
     color: var(--mid-btn-color-hover);
     background-position: left bottom;
   }
 
   /* ---------- MIDDLE ---------- */
-  .cb-{{ section.id }} .cb-middle__hero {
+  .custom-banner-section .cb-middle__hero {
     width: 100%;
     aspect-ratio: 16 / 5;
     background-repeat: no-repeat;
@@ -125,13 +124,13 @@
     background-size: cover;
   }
 
-  .cb-{{ section.id }} .cb-middle__row {
+  .custom-banner-section .cb-middle__row {
     display: flex;
     align-items: stretch;
     width: 100%;
   }
 
-  .cb-{{ section.id }} .cb-middle__content {
+  .custom-banner-section .cb-middle__content {
     width: 30%;
     flex: 0 0 30%;
     padding: 40px 32px;
@@ -141,22 +140,22 @@
     gap: 16px;
     min-width: 0;
   }
-  .cb-{{ section.id }} .cb-middle__heading {
+  .custom-banner-section .cb-middle__heading {
     margin: 0;
     color: var(--heading-color);
     font-size: var(--heading-size-m);
     line-height: 1.1;
   }
-  .cb-{{ section.id }} .cb-middle__desc {
+  .custom-banner-section .cb-middle__desc {
     color: var(--desc-color);
     font-size: var(--desc-size-m);
     line-height: 1.5;
   }
-  .cb-{{ section.id }} .cb-middle__desc p { margin: 0 0 8px; }
-  .cb-{{ section.id }} .cb-middle__desc p:last-child { margin-bottom: 0; }
-  .cb-{{ section.id }} .cb-middle__content .cb-btn { align-self: flex-start; }
+  .custom-banner-section .cb-middle__desc p { margin: 0 0 8px; }
+  .custom-banner-section .cb-middle__desc p:last-child { margin-bottom: 0; }
+  .custom-banner-section .cb-middle__content .cb-btn { align-self: flex-start; }
 
-  .cb-{{ section.id }} .cb-middle__repeat {
+  .custom-banner-section .cb-middle__repeat {
     width: 70%;
     flex: 0 0 70%;
     min-width: 0;
@@ -166,46 +165,47 @@
   }
 
   /* ---------- BOTTOM BAR ---------- */
-  .cb-{{ section.id }} .cb-bottom {
+  .custom-banner-section .cb-bottom {
     background-color: var(--bottom-bg);
     padding: 14px 24px;
     text-align: center;
   }
-  .cb-{{ section.id }} .cb-bottom__text {
+  .custom-banner-section .cb-bottom__text {
     color: var(--bottom-text-color);
     font-size: var(--bottom-text-size-m);
     line-height: 1.4;
   }
-  .cb-{{ section.id }} .cb-bottom__text p { margin: 0; }
+  .custom-banner-section .cb-bottom__text p { margin: 0; }
 
   /* ---------- DESKTOP ---------- */
-    .cb-{{ section.id }} .cb-top__text { font-size: var(--top-text-size-d); }
-    .cb-{{ section.id }} .cb-btn--top { font-size: var(--top-btn-size-d); }
-    .cb-{{ section.id }} .cb-btn--middle { font-size: var(--mid-btn-size-d); }
-    .cb-{{ section.id }} .cb-middle__heading { font-size: var(--heading-size-d); }
-    .cb-{{ section.id }} .cb-middle__desc { font-size: var(--desc-size-d); }
-    .cb-{{ section.id }} .cb-bottom__text { font-size: var(--bottom-text-size-d); }
-
+  @media screen and (min-width: 750px) {
+    .custom-banner-section .cb-top__text { font-size: var(--top-text-size-d); }
+    .custom-banner-section .cb-btn--top { font-size: var(--top-btn-size-d); }
+    .custom-banner-section .cb-btn--middle { font-size: var(--mid-btn-size-d); }
+    .custom-banner-section .cb-middle__heading { font-size: var(--heading-size-d); }
+    .custom-banner-section .cb-middle__desc { font-size: var(--desc-size-d); }
+    .custom-banner-section .cb-bottom__text { font-size: var(--bottom-text-size-d); }
+  }
 
   /* ---------- MOBILE STACK ---------- */
   @media screen and (max-width: 749px) {
-    .cb-{{ section.id }} .cb-top { padding: 12px 16px; justify-content: center; text-align: center; }
-    .cb-{{ section.id }} .cb-top__text { order: 3; flex-basis: 100%; }
-    .cb-{{ section.id }} .cb-middle__row { flex-direction: column; }
-    .cb-{{ section.id }} .cb-middle__content,
-    .cb-{{ section.id }} .cb-middle__repeat {
+    .custom-banner-section .cb-top { padding: 12px 16px; justify-content: center; text-align: center; }
+    .custom-banner-section .cb-top__text { order: 3; flex-basis: 100%; }
+    .custom-banner-section .cb-middle__row { flex-direction: column; }
+    .custom-banner-section .cb-middle__content,
+    .custom-banner-section .cb-middle__repeat {
       width: 100%;
       flex-basis: auto;
     }
-    .cb-{{ section.id }} .cb-middle__content { padding: 28px 20px; text-align: center; align-items: center; }
-    .cb-{{ section.id }} .cb-middle__content .cb-btn { align-self: center; }
-    .cb-{{ section.id }} .cb-middle__repeat { aspect-ratio: 16 / 7; }
-    .cb-{{ section.id }} .cb-middle__hero { aspect-ratio: 16 / 8; }
-    .cb-{{ section.id }} .cb-bottom { padding: 12px 16px; }
+    .custom-banner-section .cb-middle__content { padding: 28px 20px; text-align: center; align-items: center; }
+    .custom-banner-section .cb-middle__content .cb-btn { align-self: center; }
+    .custom-banner-section .cb-middle__repeat { aspect-ratio: 16 / 7; }
+    .custom-banner-section .cb-middle__hero { aspect-ratio: 16 / 8; }
+    .custom-banner-section .cb-bottom { padding: 12px 16px; }
   }
 {%- endstyle -%}
 
-<div class="cb-{{ section.id }}">
+<div class="custom-banner-section">
   <div class="cb-top">
     <div class="cb-top__logo">
       {%- if section.settings.logo -%}
